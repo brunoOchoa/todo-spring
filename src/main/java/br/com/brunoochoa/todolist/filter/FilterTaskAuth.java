@@ -57,10 +57,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 
             // Usuário e senha corretos
             request.setAttribute("idUser", user.getId());
-            // filterChain.doFilter(request, response);
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("Usuario e senha validos, tarefa criada!");
-            System.out.println("Usuario e senha validos, tarefa criada!");
+            filterChain.doFilter(request, response);
 
         } else {
             filterChain.doFilter(request, response);
