@@ -26,6 +26,8 @@ public class TaskModel {
     private LocalDateTime endAt;
     private String priority;
 
+    private String teste;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
