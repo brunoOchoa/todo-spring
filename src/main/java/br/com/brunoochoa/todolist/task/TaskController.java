@@ -3,7 +3,6 @@ package br.com.brunoochoa.todolist.task;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +19,8 @@ public class TaskController {
 
     @PostMapping("")
     public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
-        var idUser = request.getAttribute("idUser");
-        taskModel.setUserId((UUID) idUser);
+        UUID idUser = (UUID) request.getAttribute("idUser");
+        taskModel.setUserId(idUser);
         System.out.println("Request received: " + request.getAttribute("idUser"));
         return this.taskRepository.save(taskModel);
     }

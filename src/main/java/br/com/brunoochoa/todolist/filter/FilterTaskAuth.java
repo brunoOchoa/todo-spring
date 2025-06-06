@@ -27,38 +27,43 @@ public class FilterTaskAuth extends OncePerRequestFilter {
         var servletPath = request.getServletPath();
 
         if (servletPath.equals("/tasks")) {
-
-            var autorizathion = request.getHeader("Authorization");
-            var authEncoded = autorizathion.substring("Basic ".length()).trim();
-            byte[] authDecode = Base64.getDecoder().decode(authEncoded);
-
-            String auth = new String(authDecode);
-            var usernamePassword = auth.split(":");
-            var username = usernamePassword[0];
-            var password = usernamePassword[1];
-            System.out.println("Username: " + username);
-            System.out.println("Password: " + password);
-            var user = userRepository.findByUsername(username);
-            System.out.println("User: " + user);
-            if (user == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("Usuario nao encontrado");
-                System.out.println("Usuario nao existe");
-                return;
-            }
-
-            var passwordVerified = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
-            if (!passwordVerified.verified) {
+            var authorization = request.getHeader("Authorization");
+            if (authorization == null || !authorization.startsWith("Basic ")) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Senha invalida");
-                System.out.println("Senha invalida");
+                response.getWriter().write("Authorization header missing or invalid");
                 return;
             }
-
-            // Usuário e senha corretos
-            request.setAttribute("idUser", user.getId());
-            filterChain.doFilter(request, response);
-
+            try {
+                var authEncoded = authorization.substring("Basic ".length()).trim();
+                byte[] authDecode = Base64.getDecoder().decode(authEncoded);
+                String auth = new String(authDecode);
+                var usernamePassword = auth.split(":");
+                if (usernamePassword.length != 2) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("Invalid auth format");
+                    return;
+                }
+                var username = usernamePassword[0];
+                var password = usernamePassword[1];
+                System.out.println("Username: " + username);
+                var user = userRepository.findByUsername(username);
+                if (user == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().write("Usuario nao encontrado");
+                    return;
+                }
+                var passwordVerified = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
+                if (!passwordVerified.verified) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Senha invalida");
+                    return;
+                }
+                request.setAttribute("idUser", user.getId());
+                filterChain.doFilter(request, response);
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Erro ao processar autenticação");
+            }
         } else {
             filterChain.doFilter(request, response);
         }
