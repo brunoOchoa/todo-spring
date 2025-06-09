@@ -28,6 +28,7 @@ public class TaskController {
         System.out.println("Nome do JWT: " + name);
         // Não existe senha no JWT, apenas claims públicas
         // Se quiser associar o userId, pode usar o username/email para buscar no banco
+        taskModel.setSlayer(username);
         return this.taskRepository.save(taskModel);
     }
 }

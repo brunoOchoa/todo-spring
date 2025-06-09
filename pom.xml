@@ -30,7 +30,16 @@
 	<properties>
 		<java.version>24</java.version>
 	</properties>
-	<dependencies>
+	<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>1.78</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

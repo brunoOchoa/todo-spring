@@ -29,5 +29,5 @@ public class TaskModel {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    private UUID userId;
+    private String slayer;
 }
