@@ -27,7 +27,9 @@ public class FilterTaskAuth extends OncePerRequestFilter {
         var servletPath = request.getServletPath();
 
         if (servletPath.equals("/tasks")) {
+            System.out.println("FilterTaskAuth: /tasks endpoint accessed");
             var authorization = request.getHeader("Authorization");
+            System.out.println("Authorization header: " + authorization);
             if (authorization == null || !authorization.startsWith("Basic ")) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Authorization header missing or invalid");
